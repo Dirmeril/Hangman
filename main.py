@@ -4,9 +4,11 @@ import sys
 import english_words
 import random
 
+
 class App:
     level: str = 'a'
     def __init__(self, master: ctk.CTk):
+        super().__init__()
         self.master = master
         self.master.geometry('420x220')
         self.master.resizable(False, False)
@@ -29,24 +31,25 @@ In game if you want return to the menu type \"pass\" '''
         self.optionmenu.place(relx=0.2, rely=0.65, anchor='center')
         self.optionmenu.set("Choose level")
 
-    def optionmenu_callback(self, level):
-        App.level = level
-
-    def exit(self):
-        sys.exit(0)
     def start(self):
         if self.toplevel_window is None or not self.toplevel_window.winfo_exists():
-            # play.lvl = App.level
             pack_of_words = {"Easy": selection_words_easy, "Medium": selection_words_medium, "Hard": selection_words_hard}
             play.word = pack_of_words.get(App.level)[random.randrange(0, len(pack_of_words.get(App.level)))]
             attempts = {"Easy": 5, "Medium": 6, "Hard": 7}
             play.attempts = attempts.get(App.level)
             self.master.withdraw()
-            self.toplevel_window = play.ToplevelWindow()  # create window if its None or destroyed
+            self.toplevel_window = play.ToplevelWindow(self.master, attempts=play.attempts, word=play.word)
+            self.toplevel_window.master = self.master  # Przekazanie referencji do pierwszego okna do drugiego okna
+            self.toplevel_window.protocol("WM_DELETE_WINDOW", self.toplevel_window.on_close)
+            # create window if its None or destroyed
         else:
             self.toplevel_window.focus()  # if window exists focus it
 
+    def optionmenu_callback(self, level):
+        App.level = level
 
+    def exit(self):
+        sys.exit(0)
 
 if __name__ == '__main__':
     selection_words_easy = []
