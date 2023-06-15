@@ -1,5 +1,5 @@
 import customtkinter as ctk
-import play
+import second_window
 import sys
 import english_words
 import random
@@ -17,15 +17,15 @@ class App:
         self.menu: str = '''HANGMAN GAME
 Guess the password by guessing the letters in the password.
 The password is a single word.
-In game if you want return to the menu type \"pass\" '''
+In game if you want return to the menu type \"pass\"'''
 
-        self.label = ctk.CTkLabel(self.master, text=self.menu, font=('Helvetica bold', 15), justify='center')
+        self.label = ctk.CTkLabel(self.master, text=self.menu, font=('Arial', 15), justify='center')
         self.label.place(relx=0.5, rely=0.2, anchor='center')
 
         #Button start and exit
-        self.button_start = ctk.CTkButton(self.master,text='Start', command=self.start, corner_radius=10)
+        self.button_start = ctk.CTkButton(self.master, text='Start', command=self.start, corner_radius=10)
         self.button_start.place(relx=0.2, rely=0.5, anchor='center')
-        self.button_exit = ctk.CTkButton(self.master,text='Exit', command=self.exit, corner_radius=10)
+        self.button_exit = ctk.CTkButton(self.master, text='Exit', command=self.exit, corner_radius=10)
         self.button_exit.place(relx=0.2, rely=0.8, anchor='center')
         self.optionmenu = ctk.CTkOptionMenu(self.master, values=["Easy", "Medium", "Hard"], corner_radius=10, anchor='center', command=self.optionmenu_callback)
         self.optionmenu.place(relx=0.2, rely=0.65, anchor='center')
@@ -33,15 +33,15 @@ In game if you want return to the menu type \"pass\" '''
 
     def start(self):
         if self.toplevel_window is None or not self.toplevel_window.winfo_exists():
-            pack_of_words = {"Easy": selection_words_easy, "Medium": selection_words_medium, "Hard": selection_words_hard}
-            play.word = pack_of_words.get(App.level)[random.randrange(0, len(pack_of_words.get(App.level)))]
-            attempts = {"Easy": 5, "Medium": 6, "Hard": 7}
-            play.attempts = attempts.get(App.level)
-            self.master.withdraw()
-            self.toplevel_window = play.ToplevelWindow(self.master, attempts=play.attempts, word=play.word)
-            self.toplevel_window.master = self.master  # Przekazanie referencji do pierwszego okna do drugiego okna
-            self.toplevel_window.protocol("WM_DELETE_WINDOW", self.toplevel_window.on_close)
             # create window if its None or destroyed
+            pack_of_words = {"Easy": selection_words_easy, "Medium": selection_words_medium, "Hard": selection_words_hard}
+            second_window.word = pack_of_words.get(App.level)[random.randrange(0, len(pack_of_words.get(App.level)))]
+            attempts = {"Easy": 5, "Medium": 6, "Hard": 7}
+            second_window.attempts = attempts.get(App.level)
+            self.master.withdraw()
+            self.toplevel_window = second_window.ToplevelWindow(self.master, attempts=second_window.attempts, word=second_window.word)
+            self.toplevel_window.master = self.master
+            self.toplevel_window.protocol("WM_DELETE_WINDOW", self.toplevel_window.close_second_window)
         else:
             self.toplevel_window.focus()  # if window exists focus it
 
@@ -69,7 +69,6 @@ if __name__ == '__main__':
     for i in list_of_words:
         if len(i) > 8:
             selection_words_hard.append(i)
-
 
     app = ctk.CTk()
     gui = App(master=app)
